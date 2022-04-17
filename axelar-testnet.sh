@@ -2,7 +2,8 @@
 echo -e ''
 curl -s https://api.testnet.run/logo.sh | bash && sleep 3
 echo -e ''
-
+GREEN="\e[32m"
+NC="\e[0m"
 dependiences () {
     echo -e '\e[0;33mİnstalling Dependiences\e[0m'
     echo -e ''
@@ -72,7 +73,7 @@ fi
     export BROADCASTER_WALLET=`echo $NODE_PASS | axelard keys show broadcaster -a`
     echo 'export BROADCASTER_WALLET='${BROADCASTER_WALLET} >> $HOME/.bash_profile
     . $HOME/.bash_profile
-    echo -e '\n\e[44mHere is the your wallet address, save it!:' $BROADCASTER_WALLET '\e[0m\n'
+    echo -e '\n\e[44mHere is the your broadcaster address, save it!:' $BROADCASTER_WALLET '\e[0m\n'
     echo -e "\e[33mWait...\e[0m" && sleep 4 
     export VALIDATOR_OPERATOR_ADDRESS=`echo $NODE_PASS | axelard keys show validator --bech val --output json | jq -r .address`
     echo 'export VALIDATOR_OPERATOR_ADDRESS='${VALIDATOR_OPERATOR_ADDRESS} >> $HOME/.profile
@@ -169,9 +170,14 @@ sudo systemctl enable vald
 
 create_validator () {
 if [ ! $faucet ]; then
+    echo -e ${GREEN}"======================================================"${NC}
+    echo -e ''
     echo -e '\e[44mGo to this link https://faucet.testnet.axelar.dev/ then get some tokens for your "broadcaster" and "validator" wallet\e[0m'
-    echo -e '\e[42mValidator address\e[0m: '$AXL_WALLET ''
-    echo -e 'Broadcaster address '$BROADCASTER_WALLET ''
+    echo -e ''
+    echo -e "Please do this before your SSH connection is broken."
+    echo -e ${GREEN}"======================================================"${NC}
+    echo -e '\e[42mValidator address\e[0m: '${GREEN}$AXL_WALLET${NC} ''
+    echo -e '\e[42mBroadcaster address\e[0m: '${GREEN}$BROADCASTER_WALLET${NC} ''
     echo -e "\033[1;34m"
     read -p 'Then press any key: '
     echo -e "\033[0m"
@@ -190,17 +196,28 @@ fi
     sudo screen -dmS validator ./axl-dms.sh
 }
 
+additional () {
+    echo -e ${GREEN}"======================================================"${NC}
+    echo -e "Axelard logs: ${GREEN}journalctl -u axelard.service -f -n 100${NC}"
+    echo -e "Tofnd logs: ${GREEN}journalctl -u tofnd.service -f -n 100${NC}"
+    echo -e "Vald logs: ${GREEN}journalctl -u vald.service -f -n 100${NC}"
+    echo -e ${GREEN}"======================================================"${NC}
+}
+
+info () {
+    echo -e ${GREEN}"======================================================"${NC}
+    echo -e "Validator wallet: ${GREEN}$AXL_WALLET${NC}"
+    echo -e "Broadcaster address: ${GREEN}$BROADCASTER_WALLET${NC}"
+    echo -e ${GREEN}"======================================================"${NC}
+    echo -e "For tofnd mnemonic, use this command: ${GREEN}cat $HOME/tofnd_key.txt${NC}"
+    echo -e "For wallet info, use this command: ${GREEN}cat $HOME/axelar_testnet_validator_info.json${NC}"
+    echo -e "For broadcaster info use, this command: ${GREEN}cat $HOME/axelar_testnet_broadcaster_info.json${NC}"
+}
 
 done_process () {
     LOG_SEE="journalctl -u axelard.service -f -n 100"
     source $HOME/.profile
     echo -e '\n\e[41mDone! Now, please wait for your node to sync with the chain. This will take approximately 1h. Use this command to see the logs:' $LOG_SEE '\e[0m\n'
-}
-
-additional () {
-    echo -e "Axelard logs: journalctl -u axelard.service -f -n 100"
-    echo -e "Tofnd logs: journalctl -u tofnd.service -f -n 100"
-    echo -e "Vald logs: journalctl -u vald.service -f -n 100"
 }
 
 # options
@@ -220,6 +237,7 @@ do
     snapshot
     services
     create_validator
+    info
     done_process
     sleep 3
       break
