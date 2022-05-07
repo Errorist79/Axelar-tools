@@ -188,6 +188,7 @@ journalctl -u vald.service -f -n 100
   Note: Fund your `validator` and `broadcaster` accounts before proceeding.
 </Callout>
 
+
 ```bash
 axelard tx snapshot register-proxy $BROADCASTER_ADDRESS --from validator --chain-id $CHAIN_ID
 ```
