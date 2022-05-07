@@ -67,6 +67,9 @@ source $HOME/.profile
 ## Configuration
 
 Initialize your Axelar node, fetch configuration, genesis, seeds.
+```bash
+axelard init $MONIKER --chain-id $CHAIN_ID
+```
 
 ```bash
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/configuration/config.toml -O $HOME/.axelar/config/config.toml
