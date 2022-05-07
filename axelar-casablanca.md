@@ -75,11 +75,9 @@ wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main
 wget -q https://raw.githubusercontent.com/Errorist79/seeds/main/axl-2-seed.txt -O $HOME/.axelar/config/seeds.txt
 
 # enter seeds to your config.json file
-
 sed -i.bak 's/seeds = ""/seeds = "'$(cat $HOME/.axelar/config/seeds.txt)'"/g' $HOME/.axelar/config/config.toml
 
 # set external ip to your config.json file
-
 sed -i.bak 's/external_address = ""/external_address = "'"$(curl -4 ifconfig.co)"':26656"/g' $HOME/.axelar/config/config.toml
 ```
 
