@@ -68,7 +68,7 @@ source $HOME/.profile
 
 Initialize your Axelar node, fetch configuration, genesis, seeds.
 
-```
+```bash
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/configuration/config.toml -O $HOME/.axelar/config/config.toml
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/configuration/app.toml -O $HOME/.axelar/config/app.toml
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/resources/testnet-2/genesis.json -O $HOME/.axelar/config/genesis.json
@@ -83,7 +83,7 @@ sed -i.bak 's/external_address = ""/external_address = "'"$(curl -4 ifconfig.co)
 
 ## Sync From Snapshot
 
-```
+```bash
 axelard unsafe-reset-all
 URL="https://snapshots.bitszn.com/snapshots/axelar/axelar.tar"
 echo $URL
@@ -162,7 +162,7 @@ Order of operations:
 2. `tofnd`: required for `vald`
 3. `vald`
 
-```
+```bash
 sudo systemctl daemon-reload
 sudo systemctl restart axelard
 sudo systemctl restart tofnd
