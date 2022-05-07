@@ -45,7 +45,7 @@ Your `tofnd` secret mnemonic is in a file `.tofnd/export`. Save this mnemonic so
 
 ## Set environment variables
 
-```
+```bash
 echo export CHAIN_ID=axelar-testnet-casablanca-1 >> $HOME/.profile
 echo export MONIKER=PUT_YOUR_MONIKER_HERE >> $HOME/.profile
 VALIDATOR_OPERATOR_ADDRESS=`axelard keys show validator --bech val --output json | jq -r .address`
