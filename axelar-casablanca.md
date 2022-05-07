@@ -1,5 +1,8 @@
+İnstall dependiences
+```
 sudo apt-get install wget jq -y
 mkdir binaries && cd binaries
+```
 
 ## get binaries
 wget -q https://github.com/axelarnetwork/axelar-core/releases/download/v0.17.3/axelard-linux-amd64-v0.17.3
