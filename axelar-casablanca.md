@@ -64,7 +64,7 @@ Choose a secret `{KEYRING_PASSWORD}` and add the following line to `$HOME/.profi
 echo export KEYRING_PASSWORD=PUT_YOUR_KEYRING_PASSWORD_HERE >> $HOME/.profile
 source $HOME/.profile
 ```
-## configuration
+## Configuration
 
 Initialize your Axelar node, fetch configuration, genesis, seeds.
 
