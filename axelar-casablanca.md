@@ -60,7 +60,7 @@ Protect your keyring password: The following instructions instruct you to store 
 
 Choose a secret `{KEYRING_PASSWORD}` and add the following line to `$HOME/.profile`:
 
-```
+```bash
 echo export KEYRING_PASSWORD=PUT_YOUR_KEYRING_PASSWORD_HERE >> $HOME/.profile
 source $HOME/.profile
 ```
