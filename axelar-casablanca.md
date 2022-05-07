@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - Tested On Ubuntu 20.04 LTS 
-- 9.1 and later versions of `Tofnd` will not work on versions lower than Ubuntu 20.04.
+
 ```
 sudo apt-get install wget jq -y
 ```
