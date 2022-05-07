@@ -1,58 +1,100 @@
-İnstall dependiences
+# Manual Setup
+
+## Prerequisites
+- Tested On Ubuntu 20.04 LTS 
+- 9.1 and later versions of `Tofnd` will not work on versions lower than Ubuntu 20.04.
 ```
 sudo apt-get install wget jq -y
-mkdir binaries && cd binaries
 ```
 
-## get binaries
+## Get Binaries
+```
+# create a temp dir for binaries
+mkdir binaries && cd binaries
+
+# get axelard, tofnd binaries and rename
 wget -q https://github.com/axelarnetwork/axelar-core/releases/download/v0.17.3/axelard-linux-amd64-v0.17.3
 wget -q https://github.com/axelarnetwork/tofnd/releases/download/v0.10.1/tofnd-linux-amd64-v0.10.1
 mv axelard-linux-amd64-v0.17.3 axelard
 mv tofnd-linux-amd64-v0.10.1 tofnd
 
+# make binaries executable
 chmod +x *
+
+# move to usr bin
 sudo mv * /usr/bin/
+
+# clean up temp dir
 cd .. && rmdir binaries
 
-## create keys
+# check versions
+axelard version
+tofnd --help
+```
+## Generate keys
+
+```
 axelard keys add broadcaster
 axelard keys add validator
 tofnd -m create
+```
 
-## set variables
+Your `tofnd` secret mnemonic is in a file `.tofnd/export`. Save this mnemonic somewhere safe and delete the file `.tofnd/export`.
+
+## Set environment variables
+
+```
 echo export CHAIN_ID=axelar-testnet-casablanca-1 >> $HOME/.profile
 echo export MONIKER=PUT_YOUR_MONIKER_HERE >> $HOME/.profile
 VALIDATOR_OPERATOR_ADDRESS=`axelard keys show validator --bech val --output json | jq -r .address`
 BROADCASTER_ADDRESS=`axelard keys show broadcaster --output json | jq -r .address`
 echo export VALIDATOR_OPERATOR_ADDRESS=$VALIDATOR_OPERATOR_ADDRESS >> $HOME/.profile
 echo export BROADCASTER_ADDRESS=$BROADCASTER_ADDRESS >> $HOME/.profile
+```
 
-## set password 
+## Set password 
+
+Protect your keyring password: The following instructions instruct you to store your keyring plaintext password in a file on disk. This instruction is safe only if you can prevent unauthorized access to the file. Use your discretion---substitute your own preferred method for securing your keyring password.
+
+Choose a secret `{KEYRING_PASSWORD}` and add the following line to `$HOME/.profile`:
+
+```
 echo export KEYRING_PASSWORD=PUT_YOUR_KEYRING_PASSWORD_HERE >> $HOME/.profile
 source $HOME/.profile
-
-axelard init $MONIKER --chain-id $CHAIN_ID
-
+```
 ## configuration
+
+Initialize your Axelar node, fetch configuration, genesis, seeds.
+
+```
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/configuration/config.toml -O $HOME/.axelar/config/config.toml
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/configuration/app.toml -O $HOME/.axelar/config/app.toml
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/resources/testnet-2/genesis.json -O $HOME/.axelar/config/genesis.json
 wget -q https://raw.githubusercontent.com/Errorist79/seeds/main/axl-2-seed.txt -O $HOME/.axelar/config/seeds.txt
 
-sed -i.bak 's/seeds = ""/seeds = "'$(cat $HOME/.axelar/config/seeds.txt)'"/g' $HOME/.axelar/config/config.toml
-sed -i.bak 's/external_address = ""/external_address = "'"$(curl -4 ifconfig.co)"':26656"/g' $HOME/.axelar/config/config.toml
+# enter seeds to your config.json file
 
-## quick sync
+sed -i.bak 's/seeds = ""/seeds = "'$(cat $HOME/.axelar/config/seeds.txt)'"/g' $HOME/.axelar/config/config.toml
+
+# set external ip to your config.json file
+
+sed -i.bak 's/external_address = ""/external_address = "'"$(curl -4 ifconfig.co)"':26656"/g' $HOME/.axelar/config/config.toml
+```
+
+## Sync From Snapshot
+
+```
 axelard unsafe-reset-all
 URL="https://snapshots.bitszn.com/snapshots/axelar/axelar.tar"
 echo $URL
 cd $HOME/.axelar/data
 wget -O - $URL | tar -xvf -
 cd $HOME
+```
+## Create services
 
-## services
-
-# axelard
+### axelard
+```bash
 sudo tee <<EOF >/dev/null /etc/systemd/system/axelard.service
 [Unit]
 Description=Axelard Cosmos daemon
@@ -68,10 +110,11 @@ LimitNOFILE=4096
 [Install]
 WantedBy=multi-user.target
 EOF
-
+# enabled axelar daemon
 sudo systemctl enable axelard
-
-# tofnd
+```
+### tofnd
+```bash
 sudo tee <<EOF >/dev/null /etc/systemd/system/tofnd.service
 [Unit]
 Description=Tofnd daemon
@@ -88,9 +131,11 @@ LimitNOFILE=4096
 WantedBy=multi-user.target
 EOF
 
+# enable tofn daemon
 sudo systemctl enable tofnd
-
-# vald
+```
+### vald
+```bash
 sudo tee <<EOF >/dev/null /etc/systemd/system/vald.service
 [Unit]
 Description=Vald daemon
@@ -106,27 +151,51 @@ LimitNOFILE=4096
 WantedBy=multi-user.target
 EOF
 
+#enable val daemon
 sudo systemctl enable vald
+```
+## Start all services
 
-## start services
+Order of operations:
+
+1. `axelard`: ensure it's fully synced before proceeding
+2. `tofnd`: required for `vald`
+3. `vald`
+
+```
 sudo systemctl daemon-reload
 sudo systemctl restart axelard
 sudo systemctl restart tofnd
 sudo systemctl restart vald
+```
 
+## Check logs
+
+```bash
 # change log settings
+
 sed -i 's/#Storage=auto/Storage=persistent/g' /etc/systemd/journald.conf
 sudo systemctl restart systemd-journald
 
 journalctl -u axelard.service -f -n 100
 journalctl -u tofnd.service -f -n 100
 journalctl -u vald.service -f -n 100
+```
 
-## register broadcaster proxy
+## Register broadcaster proxy
+
+<Callout emoji="📝">
+  Note: Fund your `validator` and `broadcaster` accounts before proceeding.
+</Callout>
+
+```bash
 axelard tx snapshot register-proxy $BROADCASTER_ADDRESS --from validator --chain-id $CHAIN_ID
+```
 
-## create validator
-# set temporary variables for create-validator command
+## Create validator
+
+```bash
+### set temporary variables for create-validator command
 IDENTITY="YOUR_KEYBASE_IDENTITY"
 AMOUNT=PUT_AMOUNT_OF_TOKEN_YOU_WANT_TO_DELEGATE
 DENOM=uaxl
@@ -143,3 +212,8 @@ axelard tx staking create-validator --yes \
  -b block \
  --identity=$IDENTITY \
  --chain-id $CHAIN_ID
+```
+
+## Register external chains
+
+See [Support external chains](https://github.com/axelarnetwork/axelar-docs/tree/main/pages/validator/external-chains).
