@@ -75,10 +75,7 @@ axelard init $MONIKER --chain-id $CHAIN_ID
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/configuration/config.toml -O $HOME/.axelar/config/config.toml
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/configuration/app.toml -O $HOME/.axelar/config/app.toml
 wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/resources/testnet-2/genesis.json -O $HOME/.axelar/config/genesis.json
-wget -q https://raw.githubusercontent.com/Errorist79/seeds/main/axl-2-seed.txt -O $HOME/.axelar/config/seeds.txt
-
-# enter seeds to your config.json file
-sed -i.bak 's/seeds = ""/seeds = "'$(cat $HOME/.axelar/config/seeds.txt)'"/g' $HOME/.axelar/config/config.toml
+wget -q https://raw.githubusercontent.com/axelarnetwork/axelarate-community/main/resources/testnet-2/seeds.toml -O -O $HOME/.axelar/config/seeds.toml
 
 # set external ip to your config.json file
 sed -i.bak 's/external_address = ""/external_address = "'"$(curl -4 ifconfig.co)"':26656"/g' $HOME/.axelar/config/config.toml
