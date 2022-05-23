@@ -12,18 +12,13 @@ dependiences () {
 }
 
 binaries () {
-    # create a temp dir for binaries
     mkdir binaries && cd binaries
-    # get axelard, tofnd binaries and rename
-    wget -q https://github.com/axelarnetwork/axelar-core/releases/download/v0.17.0/axelard-linux-amd64-v0.17.0
-    wget -q https://github.com/axelarnetwork/tofnd/releases/download/v0.9.1/tofnd-linux-amd64-v0.9.1
-    mv axelard-linux-amd64-v0.17.0 axelard
-    mv tofnd-linux-amd64-v0.9.1 tofnd
-    # make binaries executable
+    wget -q https://github.com/axelarnetwork/axelar-core/releases/download/v0.18.2/axelard-linux-amd64-v0.18.2
+    wget -q https://github.com/axelarnetwork/tofnd/releases/download/v0.10.1/tofnd-linux-amd64-v0.10.1
+    mv axelard-linux-amd64-v0.18.2 axelard
+    mv tofnd-linux-amd64-v0.10.1 tofnd
     chmod +x *
-    # move to usr bin
     sudo mv * /usr/bin/
-    # clean up temp dir
     cd .. && rmdir binaries
 }
 
