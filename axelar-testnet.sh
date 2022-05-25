@@ -93,7 +93,7 @@ snapshot () {
     echo $URL
     FILE=`curl https://quicksync.io/axelar.json | jq -r '.[] |select(.file=="axelartestnet-lisbon-3-pruned")|.filename'`
     echo $FILE
-    echo -e 'Downloading snapshot..'
+    echo -e '${GREEN}Downloading snapshot..${NC}'
     wget -q $URL
     lz4 -dc --no-sparse $FILE | tar xfC - ~/.axelar
 }
