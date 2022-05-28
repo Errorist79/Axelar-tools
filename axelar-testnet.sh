@@ -13,9 +13,9 @@ dependiences () {
 
 binaries () {
     mkdir binaries && cd binaries
-    wget -q https://github.com/axelarnetwork/axelar-core/releases/download/v0.18.2/axelard-linux-amd64-v0.18.2
+    wget -q https://github.com/axelarnetwork/axelar-core/releases/download/v0.19.0/axelard-linux-amd64-v0.19.0
     wget -q https://github.com/axelarnetwork/tofnd/releases/download/v0.10.1/tofnd-linux-amd64-v0.10.1
-    mv axelard-linux-amd64-v0.18.2 axelard
+    mv axelard-linux-amd64-v0.19.0 axelard
     mv tofnd-linux-amd64-v0.10.1 tofnd
     chmod +x *
     sudo mv * /usr/bin/
